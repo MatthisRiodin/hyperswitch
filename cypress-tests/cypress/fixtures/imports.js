@@ -33,6 +33,10 @@ import eligibilityCheckBody from "./eligibility-check-body.json";
 import extendAuthBody from "./extend-auth-body.json";
 import relayBody from "./relay-body.json";
 import threeDSAuthenticationBody from "./three-ds-authentication-body.json";
+import createSubscriptionBody from "./create-subscription-body.json";
+import createSubscriptionInvalidCustomerBody from "./create-subscription-invalid-customer-body.json";
+import createSubscriptionMissingFieldsBody from "./create-subscription-missing-fields-body.json";
+import updateSubscriptionBody from "./update-subscription-body.json";
 import * as IncomingWebhookBody from "./webhooks/import";
 import customerCreate from "./modularPmService/modularPmServiceCustomerCreate.json";
 import paymentMethodCreate from "./modularPmService/modular-pm-service-pm-create.json";
@@ -55,6 +59,9 @@ export {
   createConnectorBody,
   createPaymentBody,
   createPayoutBody,
+  createSubscriptionBody,
+  createSubscriptionInvalidCustomerBody,
+  createSubscriptionMissingFieldsBody,
   customerCreateBody,
   customerUpdateBody,
   disputeEvidenceBody,
@@ -75,6 +82,7 @@ export {
   saveCardConfirmBody,
   sessionTokenBody,
   updateConnectorBody,
+  updateSubscriptionBody,
   voidBody,
   IncomingWebhookBody,
   customerCreate,
