@@ -9763,12 +9763,6 @@ Cypress.Commands.add(
 // Subscription Management Commands
 // ============================================
 
-function logRequestId(requestId) {
-  if (requestId) {
-    cy.task("cli_log", `Request ID: ${requestId}`);
-  }
-}
-
 Cypress.Commands.add(
   "createSubscriptionTest",
   (createSubscriptionBody, data, globalState) => {
