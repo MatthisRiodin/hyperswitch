@@ -2045,6 +2045,9 @@ impl
                 payments_grpc::AdditionalPaymentData::foreign_from(additional_payment_data)
             });
         Ok(Self {
+            split_payments: build_unified_connector_service_split_payments(
+                router_data.request.split_payments.as_ref(),
+            ),
             merchant_charge_id: Some(router_data.connector_request_reference_id.clone()),
             payment_method,
             connector_recurring_payment_id,
