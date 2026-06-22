@@ -2018,6 +2018,9 @@ impl
             browser_info,
             test_mode: router_data.test_mode,
             payment_method_type,
+            auth_type: Some(
+                payments_grpc::AuthenticationType::foreign_try_from(router_data.auth_type)?.into(),
+            ),
             state,
             return_url: router_data.request.router_return_url.clone(),
             description: router_data.description.clone(),
