@@ -2215,6 +2215,11 @@ pub async fn perform_cgraph_filtering(
             .map(|id| active_mca_ids.contains(id))
             .unwrap_or(false);
 
+        logger::info!(
+            "perform_cgraph_filtering choice={:?} cgraph_eligible={} filter_eligible={} mca_active={} context={:?}",
+            choice, cgraph_eligible, filter_eligible, mca_active, context
+        );
+
         if cgraph_eligible && filter_eligible && mca_active {
             final_selection.push(choice);
         }
