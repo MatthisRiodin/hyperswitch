@@ -8,11 +8,10 @@ pub mod routes {
 
     use actix_web::{web, Responder, Scope};
     use analytics::{
-        api_event::api_events_core, connector_events::connector_events_core,
-        enums::AuthInfo, ucs_api_events::ucs_api_events_core,
+        api_event::api_events_core, connector_events::connector_events_core, enums::AuthInfo,
         errors::AnalyticsError, lambda_utils::invoke_lambda, opensearch::OpenSearchError,
         outgoing_webhook_event::outgoing_webhook_events_core, routing_events::routing_events_core,
-        sdk_events::sdk_events_core, AnalyticsFlow,
+        sdk_events::sdk_events_core, ucs_api_events::ucs_api_events_core, AnalyticsFlow,
     };
     use api_models::analytics::{
         api_event::QueryType,

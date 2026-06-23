@@ -34,8 +34,8 @@ use crate::{
     outgoing_webhook_event::events::OutgoingWebhookLogsResult,
     routing_events::events::RoutingEventsResult,
     sdk_events::events::SdkEventsResult,
-    ucs_api_events::events::UcsApiEventsResult,
     types::TableEngine,
+    ucs_api_events::events::UcsApiEventsResult,
 };
 
 pub type ClickhouseResult<T> = error_stack::Result<T, ClickhouseError>;

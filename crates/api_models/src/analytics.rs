@@ -26,8 +26,8 @@ pub mod payments;
 pub mod refunds;
 pub mod routing_events;
 pub mod sdk_events;
-pub mod ucs_api_events;
 pub mod search;
+pub mod ucs_api_events;
 
 #[derive(Debug, serde::Serialize)]
 pub struct NameDescription {
