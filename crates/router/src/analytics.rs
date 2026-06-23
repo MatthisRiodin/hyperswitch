@@ -8,7 +8,8 @@ pub mod routes {
 
     use actix_web::{web, Responder, Scope};
     use analytics::{
-        api_event::api_events_core, connector_events::connector_events_core, enums::AuthInfo,
+        api_event::api_events_core, connector_events::connector_events_core,
+        enums::AuthInfo, ucs_api_events::ucs_api_events_core,
         errors::AnalyticsError, lambda_utils::invoke_lambda, opensearch::OpenSearchError,
         outgoing_webhook_event::outgoing_webhook_events_core, routing_events::routing_events_core,
         sdk_events::sdk_events_core, AnalyticsFlow,
@@ -173,6 +174,10 @@ pub mod routes {
                         .service(
                             web::resource("connector_event_logs")
                                 .route(web::get().to(get_profile_connector_events)),
+                        )
+                        .service(
+                            web::resource("ucs_api_event_logs")
+                                .route(web::get().to(get_profile_ucs_api_events)),
                         )
                         .service(
                             web::resource("routing_event_logs")
@@ -427,6 +432,10 @@ pub mod routes {
                                 .service(
                                     web::resource("connector_event_logs")
                                         .route(web::get().to(get_profile_connector_events)),
+                                )
+                                .service(
+                                    web::resource("ucs_api_event_logs")
+                                        .route(web::get().to(get_profile_ucs_api_events)),
                                 )
                                 .service(
                                     web::resource("routing_event_logs")
@@ -3436,6 +3445,49 @@ pub mod routes {
                 .await
                 .change_context(AnalyticsError::AccessForbiddenError)?;
                 connector_events_core(
+                    &state.pool,
+                    req,
+                    auth.platform.get_processor().get_account().get_id(),
+                )
+                .await
+                .map(ApplicationResponse::Json)
+            },
+            &auth::JWTAuth {
+                permission: Permission::ProfileAnalyticsRead,
+                allow_connected: true,
+                allow_platform: false,
+            },
+            api_locking::LockAction::NotApplicable,
+        ))
+        .await
+    }
+
+    pub async fn get_profile_ucs_api_events(
+        state: web::Data<AppState>,
+        req: actix_web::HttpRequest,
+        json_payload: web::Query<api_models::analytics::ucs_api_events::UcsApiEventsRequest>,
+    ) -> impl Responder {
+        let flow = AnalyticsFlow::GetUcsApiEvents;
+        Box::pin(api::server_wrap(
+            flow,
+            state,
+            &req,
+            json_payload.into_inner(),
+            |state, auth: AuthenticationData, req, _| async move {
+                #[cfg(feature = "v1")]
+                let profile_id = auth.profile.map(|profile| profile.get_id().clone());
+                #[cfg(feature = "v2")]
+                let profile_id = Some(auth.profile.get_id().clone());
+                utils::check_if_profile_id_is_present_in_intent_table(
+                    req.payment_id.clone(),
+                    None,
+                    &state,
+                    auth.platform.get_processor(),
+                    profile_id,
+                )
+                .await
+                .change_context(AnalyticsError::AccessForbiddenError)?;
+                ucs_api_events_core(
                     &state.pool,
                     req,
                     auth.platform.get_processor().get_account().get_id(),

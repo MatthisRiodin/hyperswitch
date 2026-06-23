@@ -20,6 +20,7 @@ pub mod routing_events;
 pub mod sdk_events;
 pub mod search;
 mod sqlx;
+pub mod ucs_api_events;
 mod types;
 use api_event::metrics::{ApiEventMetric, ApiEventMetricRow};
 use common_utils::{errors::CustomResult, types::TenantConfig};
@@ -1180,6 +1181,7 @@ pub enum AnalyticsFlow {
     GetDisputeMetrics,
     GetSankey,
     GetRoutingEvents,
+    GetUcsApiEvents,
     GetPaymentListFromOpenSearch,
 }
 

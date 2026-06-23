@@ -47,6 +47,7 @@ pub enum AnalyticsCollection {
     ApiEventsAnalytics,
     ActivePaymentsAnalytics,
     RoutingEvents,
+    UcsApiEvents,
 }
 
 #[allow(dead_code)]

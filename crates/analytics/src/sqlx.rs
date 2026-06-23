@@ -1484,6 +1484,8 @@ impl ToSql<SqlxClient> for AnalyticsCollection {
                 .attach_printable("Authentications table is not implemented for Sqlx"))?,
             Self::RoutingEvents => Err(error_stack::report!(ParsingError::UnknownError)
                 .attach_printable("RoutingEvents table is not implemented for Sqlx"))?,
+            Self::UcsApiEvents => Err(error_stack::report!(ParsingError::UnknownError)
+                .attach_printable("UcsApiEvents table is not implemented for Sqlx"))?,
         }
     }
 }

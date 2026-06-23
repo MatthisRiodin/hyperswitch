@@ -1,4 +1,4 @@
-use api_models::analytics::{connector_events::ConnectorEventsRequest, Granularity};
+use api_models::analytics::{ucs_api_events::UcsApiEventsRequest, Granularity};
 use common_utils::errors::ReportSwitchExt;
 use error_stack::ResultExt;
 use time::PrimitiveDateTime;
@@ -7,25 +7,22 @@ use crate::{
     query::{Aggregate, GroupByClause, QueryBuilder, ToSql, Window},
     types::{AnalyticsCollection, AnalyticsDataSource, FiltersError, FiltersResult, LoadRow},
 };
-pub trait ConnectorEventLogAnalytics: LoadRow<ConnectorEventsResult> {}
+pub trait UcsApiEventLogAnalytics: LoadRow<UcsApiEventsResult> {}
 
-pub async fn get_connector_events<T>(
+pub async fn get_ucs_api_events<T>(
     merchant_id: &common_utils::id_type::MerchantId,
-    query_param: ConnectorEventsRequest,
+    query_param: UcsApiEventsRequest,
     pool: &T,
-) -> FiltersResult<Vec<ConnectorEventsResult>>
+) -> FiltersResult<Vec<UcsApiEventsResult>>
 where
-    T: AnalyticsDataSource + ConnectorEventLogAnalytics,
+    T: AnalyticsDataSource + UcsApiEventLogAnalytics,
     PrimitiveDateTime: ToSql<T>,
     AnalyticsCollection: ToSql<T>,
     Granularity: GroupByClause<T>,
     Aggregate<&'static str>: ToSql<T>,
     Window<&'static str>: ToSql<T>,
 {
-    let mut query_builder: QueryBuilder<T> = match query_param.payment_id {
-        Some(_) => QueryBuilder::new(AnalyticsCollection::ConnectorEvents),
-        None => QueryBuilder::new(AnalyticsCollection::ConnectorPayoutEvents),
-    };
+    let mut query_builder: QueryBuilder<T> = QueryBuilder::new(AnalyticsCollection::UcsApiEvents);
     query_builder.add_select_column("*").switch()?;
 
     query_builder
@@ -44,31 +41,17 @@ where
             .switch()?;
     }
 
-    if let Some(dispute_id) = query_param.dispute_id {
-        query_builder
-            .add_filter_clause("dispute_id", &dispute_id)
-            .switch()?;
-    }
-
-    if let Some(payout_id) = query_param.payout_id {
-        query_builder
-            .add_filter_clause("payout_id", &payout_id)
-            .switch()?;
-    }
-
-    //TODO!: update the execute_query function to return reports instead of plain errors...
     query_builder
-        .execute_query::<ConnectorEventsResult, _>(pool)
+        .execute_query::<UcsApiEventsResult, _>(pool)
         .await
         .change_context(FiltersError::QueryBuildingError)?
         .change_context(FiltersError::QueryExecutionFailure)
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct ConnectorEventsResult {
+pub struct UcsApiEventsResult {
     pub merchant_id: common_utils::id_type::MerchantId,
     pub payment_id: Option<String>,
-    pub payout_id: Option<String>,
     pub connector_name: Option<String>,
     pub request_id: Option<String>,
     pub flow: String,
@@ -78,10 +61,13 @@ pub struct ConnectorEventsResult {
     pub error: Option<String>,
     pub status_code: u16,
     pub latency: Option<u128>,
+    pub method: Option<String>,
+    pub url: Option<String>,
+    pub stage: Option<String>,
+    pub refund_id: Option<String>,
     pub source: Option<String>,
     pub destination: Option<String>,
     pub execution_mode: Option<String>,
     #[serde(with = "common_utils::custom_serde::iso8601")]
     pub created_at: PrimitiveDateTime,
-    pub method: Option<String>,
 }
